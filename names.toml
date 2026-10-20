@@ -195,6 +195,11 @@ note = "Main HUD drawer, called by the frame builder (func_800011DC) when no men
 # ---- Saves (research/saves) ----
 
 [[function]]
+vram = 0x80000EEC
+name = "new_game_init"
+note = "New-game setup: resets the room, Return/Exit destinations, play time and the respawn point (13/17/0)."
+
+[[function]]
 vram = 0x8002E234
 name = "save_gather_slot_data"
 note = "Copies stats, day, map and settings into the slot's 100-byte summary (gSaveSlotSummaries) and the 200-byte world buffer."

@@ -527,7 +527,7 @@ functions = [
     { name = "__osPfsRequestData", vram = 0x800467B0, size = 0xD0 },
     { name = "battle_start_boss", vram = 0x8001C8C4, size = 0x208 },
     { name = "projectile_anim_init", vram = 0x80017998, size = 0x23C },
-    { name = "func_80000EEC", vram = 0x80000EEC, size = 0xFC },
+    { name = "new_game_init", vram = 0x80000EEC, size = 0xFC },
     { name = "ai_move_step", vram = 0x8000A508, size = 0x2D0 },
     { name = "func_80048AE0", vram = 0x80048AE0, size = 0xA8 },
     { name = "func_80042860", vram = 0x80042860, size = 0x24 },
