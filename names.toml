@@ -192,9 +192,780 @@ vram = 0x8001E25C
 name = "hud_draw_main"
 note = "Main HUD drawer, called by the frame builder (func_800011DC) when no menu or dialogue is open; calls most hud functions incl. the spell-name display."
 
+# ---- Saves (research/saves) ----
+
+[[function]]
+vram = 0x8002E234
+name = "save_gather_slot_data"
+note = "Copies stats, day, map and settings into the slot's 100-byte summary (gSaveSlotSummaries) and the 200-byte world buffer."
+
+[[function]]
+vram = 0x8002E404
+name = "save_apply_slot_data"
+note = "Exact reverse of save_gather_slot_data."
+
+[[function]]
+vram = 0x8002D8BC
+name = "save_write_slot"
+note = "Creates the note if the slot is new, gathers, writes 0x80 bytes at note offset 0 and 0xE0 at 0x80. The last 160 bytes of the 512-byte note are never touched."
+
+[[function]]
+vram = 0x8002D748
+name = "save_load_slot"
+note = "Reads 0xE0 bytes at note offset 0x80, then save_apply_slot_data."
+
+[[function]]
+vram = 0x8002DD18
+name = "save_read_slot_list"
+note = "Builds the 16-entry slot list from each note's 0x80-byte summary."
+
+[[function]]
+vram = 0x8002D614
+name = "save_delete_slot"
+note = "Calls pak_delete_note."
+
+[[function]]
+vram = 0x8002B510
+name = "save_menu_open"
+note = "(mode): gGameMode = 2, gMenuFlags |= mode | 0x4000, resets save menu state. Called by the inn path (gGameState 0x400) and the title screen."
+
+[[function]]
+vram = 0x8002B57C
+name = "save_menu_update"
+note = "Save menu state machine: scan, draw, load, save, delete."
+
+[[function]]
+vram = 0x8002C818
+name = "save_menu_draw_slots"
+note = "Draws the slot list; location name from the slot's map/submap."
+
+[[function]]
+vram = 0x80002EA0
+name = "player_place_at_save_point"
+note = "Looks up gNextMap/gNextSubmap in the save spawn table and sets Brian's position."
+
+[[function]]
+vram = 0x80031574
+name = "pak_scan_notes"
+note = "osPfsInitPak, then osPfsFileState on all 16 notes, matching the game's note identity."
+
+[[function]]
+vram = 0x80031800
+name = "pak_find_free_extension"
+note = "First letter A-P not used by an existing note (no callers found)."
+
+[[function]]
+vram = 0x80031890
+name = "pak_create_note"
+note = "osPfsAllocateFile(0x3738, NETE, QUEST64, ext, 0x200)."
+
+[[function]]
+vram = 0x8003195C
+name = "pak_delete_note"
+note = "osPfsDeleteFile with the game's note identity."
+
+[[function]]
+vram = 0x800319E0
+name = "pak_read"
+note = "osPfsReadWriteFile(PFS_READ) wrapper."
+
+[[function]]
+vram = 0x80031A44
+name = "pak_write"
+note = "osPfsFreeBlocks check, then osPfsReadWriteFile(PFS_WRITE)."
+
+[[function]]
+vram = 0x80031BB0
+name = "pak_error_to_code"
+note = "Maps PFS errors to -1..-6."
+
+[[function]]
+vram = 0x800169C8
+name = "spell_type_return"
+note = "spellType 4 handler (Return): warps to gReturnMap."
+
+[[function]]
+vram = 0x80016B18
+name = "spell_type_exit"
+note = "spellType 6 handler (Exit): warps to gExitMap."
+
+[[function]]
+vram = 0x8000BD10
+name = "update_return_destination"
+note = "Writes gReturnMap (+4 submap, +8 entrance) from the current room on room changes (partly read)."
+
+# ---- Player / Brian (research/battle, research/npcs) ----
+
+[[function]]
+vram = 0x80002F60
+name = "player_update"
+note = "Per-frame Brian logic in field and battle: talk/chest detection, spell input and casting, victory rewards, then the state table gPlayerStateHandlers."
+
+[[function]]
+vram = 0x80002918
+name = "player_spawn"
+note = "Places Brian on map load; after a defeat (gGameState 0x800): HP 1, MP max, statuses cleared."
+
+[[function]]
+vram = 0x80003A1C
+name = "player_battle_init"
+note = "Battle stats: attack = sum of element levels, power 16, agility, defense, move 1.0; zeroes EXP pools and statuses."
+
+[[function]]
+vram = 0x80003B60
+name = "player_state_idle"
+note = "Player states 0-2; stick input zeroed under Restriction; calls player_process_growth."
+
+[[function]]
+vram = 0x80004040
+name = "player_state_hurt"
+note = "State 5; at HP 0 goes to state 6, defeat music 0x1E, warp to the respawn point."
+
+[[function]]
+vram = 0x80004260
+name = "player_state_talking"
+note = "State 7; waits for windows to close, reads gMsgChoiceResult, starts the inn rest."
+
+[[function]]
+vram = 0x80004448
+name = "player_state_staff_hit"
+note = "State 13; hit roll, staff damage, +1 MP, Vampire heal, battle_end_turn."
+
+[[function]]
+vram = 0x800045F0
+name = "player_state_casting"
+note = "State 14 (set by spell_cast_init); projectile_init, waits for spells, ends the turn."
+
+[[function]]
+vram = 0x80005748
+name = "player_battle_move"
+note = "Distance from the circle centre vs gBattleCircleRadius; clamps in boss fights, else flags leaving the circle (escape)."
+
+[[function]]
+vram = 0x800074A0
+name = "player_process_growth"
+note = "HP/MP/Agility/Defense level-ups vs chart 0x80053ECC; element levels vs 0x80053D3C."
+
+[[function]]
+vram = 0x80006B1C
+name = "player_staff_damage"
+note = "(T/2 + sum of min(Lv, T/4)) x power/16, halved by Compression."
+
+[[function]]
+vram = 0x80006BEC
+name = "player_take_damage"
+note = "dmg x atk/(atk+def) + rand(sqrt), no element modifier; +1 HP and Defense growth EXP."
+
+# ---- Spells and status effects (research/battle) ----
+
+[[function]]
+vram = 0x800149D0
+name = "spell_check_castable"
+note = "Returns 1 = MP too low, 2 = not usable here, 4 = level too low."
+
+[[function]]
+vram = 0x800175D4
+name = "spell_calc_power"
+note = "base x 0.02 x (1 + 0.2 x sum 1.03^i) over the caster's element level; enemy level = attack. Matches the community damage calculator."
+
+[[function]]
+vram = 0x800156D0
+name = "spell_update_all"
+note = "Community: Main Spell Motion Caller. Also runs collision, the spellType handler and the status loop."
+
+[[function]]
+vram = 0x800183C4
+name = "spell_hit_check"
+note = "Accuracy roll, then the agility roll (battle_hit_roll_vs_enemy / _vs_player)."
+
+[[function]]
+vram = 0x80018484
+name = "spell_status_roll"
+note = "rand(32) for Brian / rand(80) for enemies < gStatusChance[i]."
+
+[[function]]
+vram = 0x80018524
+name = "spell_status_set_duration"
+note = "rand(gStatusDuration[i]) + 2 (others) or + 3 (self)."
+
+[[function]]
+vram = 0x8001817C
+name = "status_tick_durations"
+note = "Loops the 12 status bits, decrements counters, restores stats on expiry."
+
+[[function]]
+vram = 0x80016A84
+name = "spell_type_status_only"
+note = "spellType 5: buff/debuff, calls damage with 0."
+
+[[function]]
+vram = 0x80016BEC
+name = "spell_type_extinction"
+note = "spellType 7."
+
+[[function]]
+vram = 0x80016D60
+name = "spell_type_dispel_damage"
+note = "spellType 9: default damage + dispel."
+
+[[function]]
+vram = 0x8001700C
+name = "status_apply_compression"
+note = "Status handler 0 (table 0x8004CD44)."
+
+[[function]]
+vram = 0x80017094
+name = "status_apply_vampire"
+note = "Status handler 1."
+
+[[function]]
+vram = 0x800170DC
+name = "status_apply_power_staff"
+note = "Status handler 2."
+
+[[function]]
+vram = 0x8001715C
+name = "status_apply_restriction"
+note = "Status handler 3."
+
+[[function]]
+vram = 0x800171E4
+name = "status_apply_movement"
+note = "Status handler 4."
+
+[[function]]
+vram = 0x800172A0
+name = "status_apply_agility"
+note = "Status handler 5."
+
+[[function]]
+vram = 0x8001737C
+name = "status_apply_silence"
+note = "Status handler 6."
+
+[[function]]
+vram = 0x800173E0
+name = "status_apply_soul_searcher"
+note = "Status handler 7."
+
+[[function]]
+vram = 0x80017428
+name = "status_apply_magic_barrier"
+note = "Status handler 8."
+
+[[function]]
+vram = 0x80017470
+name = "status_apply_mp_absorb"
+note = "Status handler 9 (community: Confusion; the code turns damage into MP)."
+
+[[function]]
+vram = 0x800174B8
+name = "status_apply_defense"
+note = "Status handler 10."
+
+[[function]]
+vram = 0x800175B8
+name = "status_apply_unused"
+note = "Status handler 11 (bit 0x800, never read)."
+
+# ---- Battle flow (research/battle, research/enemies) ----
+
+[[function]]
+vram = 0x80006A74
+name = "battle_hit_roll_vs_enemy"
+note = "rand(100) < 100a/(a+(d+7)/8), Brian attacking; used by the staff and spell_hit_check."
+
+[[function]]
+vram = 0x8000ABF4
+name = "battle_hit_roll_vs_player"
+note = "Same roll, enemy attacking Brian; used by melee and spell_hit_check."
+
+[[function]]
+vram = 0x8000ACC0
+name = "enemy_take_damage"
+note = "Element rule (same x0.5, opposite x1.25), atk/(atk+def), + rand(sqrt), HP, hurt state."
+
+[[function]]
+vram = 0x8001C5F4
+name = "battle_try_random_encounter"
+note = "Distance-walked / rand(2000) encounter roll; gBattleState 0x205; agility decides the first turn; calls battle_spawn_pack."
+
+[[function]]
+vram = 0x8001C8C4
+name = "battle_start_boss"
+note = "gBattleState 0x305, swaps in the boss tables, boss_spawn."
+
+[[function]]
+vram = 0x8001CFE8
+name = "battle_update"
+note = "Per-frame battle flow: victory (boss_set_defeated, boss_give_reward, battle_roll_item_drop), escape, cleanup, starts the next turn."
+
+[[function]]
+vram = 0x8001D358
+name = "battle_end_turn"
+note = "Ticks statuses, advances to the next enemy (round robin), switches sides."
+
+[[function]]
+vram = 0x8001D640
+name = "battle_spawn_pack"
+note = "Random pack from the zone; spawns its groups."
+
+[[function]]
+vram = 0x8001D828
+name = "battle_roll_item_drop"
+note = "rand(4) == 0 (bosses always), item from a random enemy's base record +0x34."
+
+[[function]]
+vram = 0x80009260
+name = "battle_build_turn_order"
+note = "Sorts slot indices by agility into gBattleTurnList."
+
+# ---- Enemies and AI (research/enemies, research/battle) ----
+
+[[function]]
+vram = 0x80008BB0
+name = "enemies_reset"
+note = "Clears gEnemyCount and the 6 slots, then loads the set if the map has one."
+
+[[function]]
+vram = 0x80008C20
+name = "enemies_update"
+note = "Per slot calls gEnemyStateHandlers[state]; then boss_spell_anims_update in boss battles."
+
+[[function]]
+vram = 0x80008EF4
+name = "enemy_set_load"
+note = "Picks gEnemySetTable[map header +0x12] and DMAs it to 0x8020E6F0."
+
+[[function]]
+vram = 0x80008F6C
+name = "enemies_free_all"
+note = "Frees every slot's model, count = 0."
+
+[[function]]
+vram = 0x80008FE0
+name = "enemy_spawn"
+note = "Copies base record idx x 0x38 into a slot; clears statuses; attack, power 16, agility, defense, move 1.0."
+
+[[function]]
+vram = 0x8000932C
+name = "enemy_turn_begin"
+note = "Sets flag bit 0 on the enemy at gBattleTurnIndex."
+
+[[function]]
+vram = 0x80009378
+name = "ai_state_idle"
+note = "Enemy state 0: Restriction ends the turn; else move or attack."
+
+[[function]]
+vram = 0x80009588
+name = "ai_state_approach"
+note = "State 1: walks toward Brian (up to 4 steps), then attacks or ends the turn."
+
+[[function]]
+vram = 0x80009818
+name = "ai_state_hurt"
+note = "State 2: hurt; at HP 0 removes the enemy, count - 1, adds EXP/rewards to the pools."
+
+[[function]]
+vram = 0x80009934
+name = "ai_state_face_and_wait"
+note = "State 3 (plausible; no setter found)."
+
+[[function]]
+vram = 0x800099DC
+name = "ai_state_melee"
+note = "State 4: hit roll, ai_melee_damage, player_take_damage."
+
+[[function]]
+vram = 0x80009D78
+name = "ai_state_cast"
+note = "State 5: calls projectile_init."
+
+[[function]]
+vram = 0x8000A008
+name = "ai_choose_action"
+note = "Sorts the monster's actions by range and picks one that fits the distance to Brian."
+
+[[function]]
+vram = 0x8000A3F4
+name = "ai_turn_toward"
+note = "atan2 to a point, clamped turn (plausible)."
+
+[[function]]
+vram = 0x8000A508
+name = "ai_move_step"
+note = "Called by every state to move (plausible)."
+
+[[function]]
+vram = 0x8000AC84
+name = "ai_melee_damage"
+note = "attack x power >> 4, halved by status bit 0 (Compression)."
+
+[[function]]
+vram = 0x8000B140
+name = "enemy_index_from_battle_data"
+note = "Finds the slot of a battleData pointer."
+
+[[function]]
+vram = 0x8000B170
+name = "enemy_death_effect"
+note = "Called on death; uses effect table 0x80054690 (plausible)."
+
+# ---- Bosses (research/enemies, research/npcs) ----
+
+[[function]]
+vram = 0x8000B2B8
+name = "boss_spell_anims_clear"
+note = "Zeroes 0x8007D0C4."
+
+[[function]]
+vram = 0x8000B530
+name = "boss_field_spawn"
+note = "Loops the 8 boss locations, skips defeated bosses, loads and spawns the one for this room."
+
+[[function]]
+vram = 0x8000B740
+name = "boss_field_check_trigger"
+note = "Distance < radius returns the boss number."
+
+[[function]]
+vram = 0x8000B7DC
+name = "boss_spawn"
+note = "Like enemy_spawn, from the boss data at 0x803A9F20."
+
+[[function]]
+vram = 0x8000B9D8
+name = "boss_is_defeated"
+note = "Tests bit N of gBossDefeatedFlags (mask table 0x8004D740)."
+
+[[function]]
+vram = 0x8000BA0C
+name = "boss_set_defeated"
+note = "Sets bit N of gBossDefeatedFlags."
+
+[[function]]
+vram = 0x8000BA4C
+name = "boss_intro_start"
+note = "Copies the boss's field name/dialogue pointers into the message buffer."
+
+[[function]]
+vram = 0x8000BB68
+name = "boss_give_reward"
+note = "Max HP bonus from gBossBonusHp (cap 500); Mammon starts the ending."
+
+# ---- Field, NPCs and dialogue (research/npcs) ----
+
+[[function]]
+vram = 0x80001800
+name = "field_mode_loop"
+note = "Runs while gGameMode == 1: player, NPC and time updates; map loads, inn rest (+9000 ticks via time_set), fades."
+
+[[function]]
+vram = 0x80005A10
+name = "npc_find_talk_target"
+note = "Distance/facing test over the NPC list; result (index + 1) in gTalkTargetNpc."
+
+[[function]]
+vram = 0x80007A50
+name = "npc_load_town"
+note = "DMAs town NPC blocks from gTownNpcRomTable, spawns them, opens scripted scene text."
+
+[[function]]
+vram = 0x800080E8
+name = "npc_spawn_room"
+note = "Fills the NPC list from the map's 0x2C-byte NPC records that match gNextSubmap."
+
+[[function]]
+vram = 0x80007B64
+name = "npc_update_all"
+note = "Per-frame NPC state machine (idle, walk, turn, turn back)."
+
+[[function]]
+vram = 0x80008290
+name = "npc_walk_step"
+note = "Moves an NPC one step with collision and floor height."
+
+[[function]]
+vram = 0x800086E4
+name = "npc_talk_begin"
+note = "Sets talk state; text condition 2 (own item), 5 (boss dead), 6 (inn); loads dialogue."
+
+[[function]]
+vram = 0x80008948
+name = "npc_talk_end"
+note = "After talking: wanderers idle with a random delay, others turn back."
+
+[[function]]
+vram = 0x80008A00
+name = "npc_load_dialogue"
+note = "DMAs 0x400 bytes from ROM 0xD305E0 + textId into the message buffer, copies the name."
+
+[[function]]
+vram = 0x80008AD8
+name = "npc_set_dialogue_ptr"
+note = "Same as npc_load_dialogue from a RAM pointer (decompiled in src/8650.c)."
+
+[[function]]
+vram = 0x8002E628
+name = "msgwin_reset"
+note = "Clears a message window slot's state and buffers to 0xFF."
+
+[[function]]
+vram = 0x8002E768
+name = "msgwin_open"
+note = "Allocates one of 4 windows in gMsgWindows, copies text, name and choices; gMsgWinOpenCount++."
+
+[[function]]
+vram = 0x8002EAA0
+name = "msgwin_update_all"
+note = "Called by the frame builder when gGameState bit 1 is set: text reveal, control bytes E0/F0/F2/FF, choice cursor, writes gMsgChoiceResult."
+
+[[function]]
+vram = 0x80021240
+name = "inventory_count_item"
+note = "Counts matches of an item ID in the inventory."
+
+[[function]]
+vram = 0x800212A0
+name = "inventory_add_item"
+note = "Writes the item to the first 0xFF slot (no full check)."
+
+# ---- Misc ----
+
+[[function]]
+vram = 0x800268D4
+name = "sfx_play_scaled"
+note = "(channel?, sound, volume): scales the volume by a per-sound table (0x80053CAC) and the SFX volume setting, then calls sfx_play."
+
+[[function]]
+vram = 0x80022FD0
+name = "get_rand"
+note = "get_rand(n): random 0..n-1 (decomp name, symbol_addrs.txt)."
+
 # ---- Data ----
 
 [[data]]
 vram = 0x80092876
 name = "gPadButtonsNew"
 note = "Buttons newly pressed this frame (set by pad_read): A 0x8000, B 0x4000, Z 0x2000, Start 0x1000, D-pad up 0x0800 down 0x0400, L 0x0020."
+
+[[data]]
+vram = 0x8008FD58
+name = "gSaveSlotSummaries"
+note = "16 x 100-byte save summaries (note offset 0x00)."
+
+[[data]]
+vram = 0x80090398
+name = "gSaveWorldBuffer"
+note = "200-byte world block staging buffer (note offset 0x80)."
+
+[[data]]
+vram = 0x80090460
+name = "gSaveSummaryReadBuf"
+note = "Pak read buffer for a summary."
+
+[[data]]
+vram = 0x800904E0
+name = "gSaveWorldReadBuf"
+note = "Pak read buffer for the world block."
+
+[[data]]
+vram = 0x8008FD30
+name = "gSaveSlotList"
+note = "16-entry slot list built by save_read_slot_list."
+
+[[data]]
+vram = 0x8008FD2A
+name = "gSaveSlotCursor"
+note = "Selected save slot."
+
+[[data]]
+vram = 0x8008FD0C
+name = "gMenuFlags"
+note = "Menu request flags (save_menu_open sets mode | 0x4000)."
+
+[[data]]
+vram = 0x8008FD20
+name = "gSaveMenuState"
+note = "Save menu state (save_menu_open sets 0x1000)."
+
+[[data]]
+vram = 0x80084EF8
+name = "gReturnMap"
+note = "Return spell destination: map, +4 submap, +8 entrance."
+
+[[data]]
+vram = 0x80084F04
+name = "gExitMap"
+note = "Exit spell destination: map, +4 submap, +8 entrance."
+
+[[data]]
+vram = 0x8007BA60
+name = "gRespawnMap"
+note = "Last inn map; set on inn rest, used after a defeat (gGameState 0x800)."
+
+[[data]]
+vram = 0x8007BA62
+name = "gRespawnSubmap"
+note = "Last inn submap."
+
+[[data]]
+vram = 0x8007BA64
+name = "gRespawnEntrance"
+note = "Last inn entrance."
+
+[[data]]
+vram = 0x800869D8
+name = "gChestFlags"
+note = "Opened-chest bits (saved)."
+
+[[data]]
+vram = 0x80086AE8
+name = "gSpiritFlags"
+note = "Collected-spirit bits (saved)."
+
+[[data]]
+vram = 0x8007D19C
+name = "gBossDefeatedFlags"
+note = "1 byte, bit per boss (saved)."
+
+[[data]]
+vram = 0x8005FA00
+name = "gMessageSpeed"
+note = "Message speed setting (saved)."
+
+[[data]]
+vram = 0x8005F010
+name = "gBgmVolume"
+note = "Music volume setting (saved)."
+
+[[data]]
+vram = 0x8007C998
+name = "gEnemies"
+note = "Enemy slots (6 pointers)."
+
+[[data]]
+vram = 0x8007C990
+name = "gEnemyCount"
+note = "Enemies alive in the battle."
+
+[[data]]
+vram = 0x8007D0B0
+name = "gBattleTurnList"
+note = "Enemy slot indices sorted by agility."
+
+[[data]]
+vram = 0x8008C598
+name = "gBattleTurnIndex"
+note = "Current index into gBattleTurnList."
+
+[[data]]
+vram = 0x8008C59A
+name = "gBattleTurnCount"
+note = "Number of entries in gBattleTurnList."
+
+[[data]]
+vram = 0x8007BA68
+name = "gBattleExpPool"
+note = "EXP collected this battle."
+
+[[data]]
+vram = 0x8007BA6C
+name = "gBattleExpPool2"
+note = "Second reward pool collected this battle (monster field 0x14)."
+
+[[data]]
+vram = 0x8007BA70
+name = "gBattleItemDrop"
+note = "Item dropped by the battle."
+
+[[data]]
+vram = 0x8008C434
+name = "gBattleCircleRadius"
+note = "Battle circle radius (100 in random battles)."
+
+[[data]]
+vram = 0x8004CD1C
+name = "gSpellTypeHandlers"
+note = "Handler per spellType."
+
+[[data]]
+vram = 0x8004C2A8
+name = "gElementWeakMasks"
+note = "Element rule masks (same x0.5, opposite x1.25)."
+
+[[data]]
+vram = 0x8004CDF0
+name = "gStatusChance"
+note = "Status infliction chance per status."
+
+[[data]]
+vram = 0x8004CDFC
+name = "gStatusDuration"
+note = "Status duration range per status."
+
+[[data]]
+vram = 0x8004C230
+name = "gPlayerStateHandlers"
+note = "Brian's state handler table."
+
+[[data]]
+vram = 0x8004C290
+name = "gEnemyStateHandlers"
+note = "Enemy AI state handler table (ai_state_*)."
+
+[[data]]
+vram = 0x80054160
+name = "gEnemySetTable"
+note = "ROM ranges of the 6 monster sets, picked by map header +0x12."
+
+[[data]]
+vram = 0x8004C2C0
+name = "gBossBonusHp"
+note = "Max HP reward per boss."
+
+[[data]]
+vram = 0x80054640
+name = "gBossSpellEffectLists"
+note = "Boss-only spell effect lists."
+
+[[data]]
+vram = 0x800547F0
+name = "gTownNpcRomTable"
+note = "7 x {rom_start, rom_end} town NPC blocks."
+
+[[data]]
+vram = 0x8007BA74
+name = "gTalkTargetNpc"
+note = "NPC index + 1, 0 = none."
+
+[[data]]
+vram = 0x8007BCE4
+name = "gNPCCount"
+note = "NPCs spawned in this room."
+
+[[data]]
+vram = 0x8007B2EC
+name = "gFadeTimer"
+note = "Counts down; at 0 the field loop performs the pending transition."
+
+[[data]]
+vram = 0x800905C0
+name = "gMsgWinOpenCount"
+note = "Open message windows."
+
+[[data]]
+vram = 0x800905C4
+name = "gMsgChoiceResult"
+note = "-1 pending, else the chosen option (0 = Yes)."
+
+[[data]]
+vram = 0x800905C8
+name = "gMsgChoiceCount"
+note = "Number of options; option text pointers follow at 0x800905D0."
+
+[[data]]
+vram = 0x800905E0
+name = "gMsgWindows"
+note = "4 message window slots x 0x89C bytes."
