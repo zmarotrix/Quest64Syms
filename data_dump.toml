@@ -1558,7 +1558,7 @@ symbols = [
     { name = "gPadStickY", vram = 0x80092872 },
     { name = "D_80092873", vram = 0x80092873 },
     { name = "gPadButtonPressed", vram = 0x80092874 },
-    { name = "D_80092876", vram = 0x80092876 },
+    { name = "gPadButtonsNew", vram = 0x80092876 },
     { name = "D_80092878", vram = 0x80092878 },
     { name = "gSIMessageQ", vram = 0x80092880 },
     { name = "gPFS", vram = 0x80092898 },

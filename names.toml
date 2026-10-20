@@ -129,3 +129,72 @@ note = "Advances gCurrentTime by 1; on reaching gDayLength wraps and increments 
 vram = 0x80010510
 name = "time_set"
 note = "Sets gCurrentTime; on overflow increments gCurrentDay (capped at 9999). Likely used by inns. Disassembly."
+
+# ---- UI: windows, text, sprites, input, sound (see research/menus) ----
+
+[[function]]
+vram = 0x800307D8
+name = "ui_draw_rect"
+note = "(style, x, y, w, h): filled rectangle; style 0 window background, 3 border/shadow. Called 7x by ui_draw_window."
+
+[[function]]
+vram = 0x8002FB30
+name = "ui_draw_window"
+note = "Centered window: background, 1px border, 3px drop shadow, scaled by an opening animation. Disassembly."
+
+[[function]]
+vram = 0x80030EA0
+name = "ui_draw_text"
+note = "(x, y, text): menu/dialogue font (CI8, 152 px wide) in the game's text encoding; draws inventory item names and save-menu text."
+
+[[function]]
+vram = 0x80020B4C
+name = "hud_draw_text"
+note = "(x, y, palette, text): small 6x8 HUD font, ASCII 0-9 : ' - . ? = space A-Z; palette table 0x803A6FB0."
+
+[[function]]
+vram = 0x80020D18
+name = "hud_strlen"
+note = "Length of a zero-terminated string; used to center HUD text."
+
+[[function]]
+vram = 0x80029B58
+name = "hud_draw_sprite"
+note = "(image, x, y, ...): draws one of the 55 menu images (tables 0x8005F014 sizes, 0x8005F0D0 pixels) with edge clipping."
+
+[[function]]
+vram = 0x800210FC
+name = "hud_draw_tex_region"
+note = "(texture, x, y, w, h, s, t, dsdx, dtdy): draw a rectangle cut from a texture sheet; wraps hud_load_tex_region + hud_tex_rect."
+
+[[function]]
+vram = 0x80020E2C
+name = "hud_load_tex_region"
+note = "Loads a CI8 texture region into TMEM (SETTIMG 0xFD48 ... LOADTILE)."
+
+[[function]]
+vram = 0x80020F8C
+name = "hud_tex_rect"
+note = "Emits the TEXRECT for a loaded region."
+
+[[function]]
+vram = 0x80025B8C
+name = "sfx_play"
+note = "(sound, ?, volume): plays a sound effect; menus use 1 confirm, 2 cancel, volume 0x40 (decomp title screen, bgm.c)."
+
+[[function]]
+vram = 0x800314C0
+name = "pad_read"
+note = "Reads the controller (decompiled in src/31F00.c): sets gPadButtonPressed and D_80092876 (newly pressed buttons)."
+
+[[function]]
+vram = 0x8001E25C
+name = "hud_draw_main"
+note = "Main HUD drawer, called by the frame builder (func_800011DC) when no menu or dialogue is open; calls most hud functions incl. the spell-name display."
+
+# ---- Data ----
+
+[[data]]
+vram = 0x80092876
+name = "gPadButtonsNew"
+note = "Buttons newly pressed this frame (set by pad_read): A 0x8000, B 0x4000, Z 0x2000, Start 0x1000, D-pad up 0x0800 down 0x0400, L 0x0020."
