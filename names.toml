@@ -1,0 +1,131 @@
+# Names for Quest 64 (USA 1.0) functions and data, keyed by address.
+#
+# This file is the source of truth for symbol names. tools/apply_names.py writes these names into
+# dump.toml / data_dump.toml and updates code that uses the old names. Addresses never change, so
+# the file can be re-applied at any time (for example after dump.toml is regenerated).
+#
+# Naming rules:
+#   - snake_case with a subsystem prefix: spell_, projectile_, boss_, ai_, brian_, model_, boot_, ...
+#   - Only name something once there's evidence for what it does; otherwise leave it as func_XXXXXXXX.
+#     Put the evidence in `note` (what it does and how we know).
+#   - Renaming only affects source code. Mods that are already built keep working, because packaged
+#     mods refer to functions by address.
+
+# ---- Boot ----
+
+[[function]]
+vram = 0x80000FE8
+name = "boot_load_static_data"
+note = "DMAs ROM 0xD4B3C0-0xD77380 (spell, item and boss tables) to RAM 0x800C0000, plus other static blocks. Disassembly."
+
+# ---- Casting ----
+
+[[function]]
+vram = 0x800070C0
+name = "spell_menu_input"
+note = "Reads element button presses while casting. decomp.me (Rainchus, vbhayden): 'Spell Menu Input'."
+
+[[function]]
+vram = 0x80014890
+name = "spell_find_by_inputs"
+note = "Finds the spell whose element press sequence matches; scans 15 spells per element. Disassembly."
+
+[[function]]
+vram = 0x800072A8
+name = "spell_cast_init"
+note = "Starts a cast. decomp.me (Rainchus, vbhayden): 'Spell Cast Init / Transaction'."
+
+[[function]]
+vram = 0x800140EC
+name = "spell_camera_snap"
+note = "decomp.me (inspectredc, vbhayden): 'Spell Camera Snap'."
+
+# ---- Projectiles ----
+
+[[function]]
+vram = 0x80014A98
+name = "projectile_init"
+note = "Creates a RuntimeProjectileTransform from a spell and queues extra shots. Disassembly; decomp.me: 'Projectile Init'."
+
+[[function]]
+vram = 0x80015B8C
+name = "projectile_motion"
+note = "decomp.me (Rainchus): 'Projectile Motion'."
+
+[[function]]
+vram = 0x80017998
+name = "projectile_anim_init"
+note = "decomp.me (inspectredc, vbhayden): 'Projectile Anim Init'."
+
+[[function]]
+vram = 0x80017FA0
+name = "projectile_ground_impacts"
+note = "decomp.me (vbhayden): 'Projectile Ground Impacts'."
+
+[[function]]
+vram = 0x800163E8
+name = "spell_autohit_collision"
+note = "Collision for spells with autoHit set. decomp.me (vbhayden): 'Auto-Hit Spell Collision'."
+
+# ---- Spell type handlers (SpellDefinition.spellType) ----
+
+[[function]]
+vram = 0x80016520
+name = "spell_type_default"
+note = "spellType 0x0. decomp.me (LLONSIT-glitch): 'Spell Type 0x0 - Default'."
+
+[[function]]
+vram = 0x800165E4
+name = "spell_type_heal"
+note = "spellType 0x1. decomp.me (LLONSIT-glitch, vbhayden): 'Spell Type 0x1 - Healing'."
+
+[[function]]
+vram = 0x8001679C
+name = "spell_type_drain_magic"
+note = "spellType 0x2. Drains 11/64 of the target's MP. decomp.me (vbhayden, LLONSIT-glitch)."
+
+[[function]]
+vram = 0x80016940
+name = "spell_type_escape"
+note = "spellType 0x3. decomp.me (vbhayden): 'Spell Type 0x3 - Escape'."
+
+[[function]]
+vram = 0x80016CB0
+name = "spell_type_dispel"
+note = "spellType 0x8 (Invalidity). decomp.me (vbhayden): 'Spell Type 0x8 Dispel'."
+
+# ---- Enemies and bosses ----
+
+[[function]]
+vram = 0x8000A284
+name = "ai_spell_init"
+note = "Enemy spell casting setup. decomp.me (Rainchus, vbhayden): 'AI Spell Init + Special Anims'."
+
+[[function]]
+vram = 0x8000B2C8
+name = "boss_spell_anims_queue"
+note = "decomp.me (vbhayden): 'Queue Boss Spell Anims'."
+
+[[function]]
+vram = 0x8000B300
+name = "boss_spell_anims_update"
+note = "Reads 0x8000|spellId AI actions and spell size. Disassembly; decomp.me (Rainchus, Drahsid, vbhayden): 'Update Boss Spell Anims'."
+
+# ---- Models ----
+
+[[function]]
+vram = 0x8001DC78
+name = "model_draw_bone"
+note = "Builds one bone's matrix (billboarded when flag 1 is set), draws its display list, then recurses into child bones. Patched in Quest64-Recomp/patches/main.c."
+
+# ---- Time ----
+
+[[function]]
+vram = 0x800102D0
+name = "time_tick"
+note = "Advances gCurrentTime by 1; on reaching gDayLength wraps and increments gCurrentDay (capped at 999). Disassembly; see research/time."
+
+[[function]]
+vram = 0x80010510
+name = "time_set"
+note = "Sets gCurrentTime; on overflow increments gCurrentDay (capped at 9999). Likely used by inns. Disassembly."
