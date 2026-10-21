@@ -748,6 +748,28 @@ vram = 0x80022FD0
 name = "get_rand"
 note = "get_rand(n): random 0..n-1 (decomp name, symbol_addrs.txt)."
 
+# ---- Frame, menus and popups ----
+
+[[function]]
+vram = 0x800011DC
+name = "frame_build"
+note = "Builds one frame for the current game mode: pause menu (gGameState bit 0), dialogue (bit 1) or hud_draw_main; the system menu changes gGameMode inside it."
+
+[[function]]
+vram = 0x80018DF4
+name = "damage_popup_spawn"
+note = "(battleData, kind, amount): shows a damage number over a fighter for 45 frames (9 popup slots at 0x800873D0, 0x1C each)."
+
+[[function]]
+vram = 0x80026A40
+name = "sysmenu_reset_flags"
+note = "Resets the system menu's flags and state when it closes (gMenuFlags = 0x8000, gSaveMenuState = 0)."
+
+[[function]]
+vram = 0x80026A04
+name = "bgm_apply_volume"
+note = "Applies the music volume setting (gBgmVolume) through a table; called when the system menu hands over to the field (likely)."
+
 # ---- Data ----
 
 [[data]]
