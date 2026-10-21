@@ -770,6 +770,16 @@ vram = 0x80026A04
 name = "bgm_apply_volume"
 note = "Applies the music volume setting (gBgmVolume) through a table; called when the system menu hands over to the field (likely)."
 
+[[function]]
+vram = 0x8002413C
+name = "world_to_screen"
+note = "(f32 x, f32 y, f32 z, s32* sx, s32* sy): projects a scene point to screen pixels; returns 0 when off screen. Used to place damage numbers."
+
+[[function]]
+vram = 0x80018F60
+name = "damage_popup_draw"
+note = "Draws the active damage numbers (slots at 0x800873D0) over their fighters, using world_to_screen."
+
 # ---- Data ----
 
 [[data]]
