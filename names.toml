@@ -1006,3 +1006,40 @@ note = "Number of options; option text pointers follow at 0x800905D0."
 vram = 0x800905E0
 name = "gMsgWindows"
 note = "4 message window slots x 0x89C bytes."
+
+# ---- Models and particles (Eltale-Odyssey research, burn visuals) ----
+
+[[function]]
+vram = 0x8001DB38
+name = "model_draw"
+note = "(flags, object, animation, gfx): draws a model's bone tree at the object's position and scale. Called once per enemy, NPC, boss, Brian and field object."
+
+[[function]]
+vram = 0x80008CF4
+name = "enemy_draw_all"
+note = "Draws every enemy in gEnemySlots through model_draw (object = slot + 0x24, the battle data)."
+
+[[function]]
+vram = 0x8001B108
+name = "particle_spawn"
+note = "Copies a 0x40-byte particle (life, update callback, display lists, position +0x18, scale +0x28/+0x2C, velocity +0x30, color index +0x3C) into the 256-entry pool at 0x80088428."
+
+[[function]]
+vram = 0x80019354
+name = "particle_emitter_add"
+note = "(color, life, x, y, z, radius): queues one of 7 emitters (0x800874E8, 0x18 each) that spray template 0x8004CFB0 sparkles every other frame. Used by spell impacts and enemy deaths."
+
+[[function]]
+vram = 0x800193B4
+name = "particle_emitters_update"
+note = "Runs the emitter queue: random direction within the radius, particle_spawn."
+
+[[function]]
+vram = 0x800195E0
+name = "particle_sparkle_update"
+note = "Sparkle callback: moves by velocity (damped), shrinks at the end of life, sets env color from the color table 0x800EBD1C (RGBA, by index)."
+
+[[function]]
+vram = 0x8001A398
+name = "effect_objects_draw"
+note = "Draws the 32 spell effect objects at 0x800875A8 (0x58 each) with env color from table 0x800EBD1C and fade by life."
