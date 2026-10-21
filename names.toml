@@ -1043,3 +1043,8 @@ note = "Sparkle callback: moves by velocity (damped), shrinks at the end of life
 vram = 0x8001A398
 name = "effect_objects_draw"
 note = "Draws the 32 spell effect objects at 0x800875A8 (0x58 each) with env color from table 0x800EBD1C and fade by life."
+
+[[function]]
+vram = 0x800120C0
+name = "chest_item_message"
+note = "(item): writes the found-item message (item name from the table at 0x803A9954, then the suffix at 0x8004C460) into gMessageBuffer. Called by the chest-open routine 0x8000496C before inventory_add_item."

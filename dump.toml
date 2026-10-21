@@ -684,7 +684,7 @@ functions = [
     { name = "func_80023360", vram = 0x80023360, size = 0x1A0 },
     { name = "func_80026488", vram = 0x80026488, size = 0x84 },
     { name = "spell_update_all", vram = 0x800156D0, size = 0x480 },
-    { name = "func_800120C0", vram = 0x800120C0, size = 0xB0 },
+    { name = "chest_item_message", vram = 0x800120C0, size = 0xB0 },
     { name = "func_80011768", vram = 0x80011768, size = 0xE8 },
     { name = "func_80018D34", vram = 0x80018D34, size = 0x80 },
     { name = "ai_state_approach", vram = 0x80009588, size = 0x290 },
